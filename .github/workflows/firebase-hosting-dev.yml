@@ -34,7 +34,7 @@ jobs:
             --entry-point=CardPaymentsStripe \
             --trigger-event=providers/google.firebase.database/eventTypes/ref.create \
             --trigger-resource=projects/_/instances/${{ vars.FIREBASE_RTDB_NAME }}/refs/card-payments/{pushId} \
-            --runtime=go120 \
+            --runtime=go121 \
             --set-env-vars=STRIPE_SECRET=${{ secrets.STRIPE_SECRET }},\
           RETURN_BASE_URL=${{ vars.RETURN_BASE_URL }},\
           WEBHOOK_SECRET=${{ secrets.WEBHOOK_SECRET }},\
