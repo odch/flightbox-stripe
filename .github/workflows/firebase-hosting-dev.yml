@@ -1,0 +1,43 @@
+name: Deploy to Firebase Functions on merge (dev)
+'on':
+  push:
+    branches:
+      - main
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        environment:
+          - lszm_test
+    environment: ${{ matrix.environment }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Google Cloud SDK
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.GCP_SA_KEY }}'
+
+      - name: Install Google Cloud SDK components
+        run: |
+          gcloud components install beta
+
+      - name: Configure Google Cloud Project
+        run: |
+          gcloud config set project ${{ vars.FIREBASE_PROJECT }}
+
+      - name: Deploy Firebase Function (Go)
+        run: |
+          gcloud functions deploy cardPaymentsStripe \
+            --entry-point=CardPaymentsStripe \
+            --trigger-event=providers/google.firebase.database/eventTypes/ref.create \
+            --trigger-resource=projects/_/instances/${{ vars.FIREBASE_RTDB_NAME }}/refs/card-payments/{pushId} \
+            --runtime=go120 \
+            --set-env-vars=STRIPE_SECRET=${{ secrets.STRIPE_SECRET }},\
+          RETURN_BASE_URL=${{ vars.RETURN_BASE_URL }},\
+          WEBHOOK_SECRET=${{ secrets.WEBHOOK_SECRET }},\
+          WEBHOOK_URL=${{ vars.WEBHOOK_URL }},\
+          TERMINAL_ID=${{ vars.TERMINAL_ID }},\
+          FIREBASE_DATABASE_URL=https://${{ vars.FIREBASE_RTDB_NAME }}.firebaseio.com
