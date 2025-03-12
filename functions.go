@@ -65,11 +65,12 @@ func StripeWebhook(w http.ResponseWriter, req *http.Request) {
 type RTDBEvent struct {
 	Data  interface{} `json:"data"`
 	Delta struct {
-		Amount           int64  `json:"amount"`
+		Amount           int64  `json:"amount"` // cents
 		ArrivalReference string `json:"arrivalReference"`
+		RefNr            string `json:"refNr"`
 		Currency         string `json:"currency"`
 		Email            string `json:"email"`
-		Registration     string `json:"registration"`
+		Registration     string `json:"immatriculation"`
 		Method           string `json:"method"`
 	} `json:"delta"`
 }
@@ -86,9 +87,9 @@ func CardPaymentsStripe(ctx context.Context, e RTDBEvent) error {
 	id := idx[len(idx)-1]
 	log.Printf("%+v", e)
 	if e.Delta.Method == "card" {
-		err = test.TerminalPayment(config, id, e.Delta.Amount*100, &e.Delta.Email, e.Delta.Registration)
+		err = test.TerminalPayment(config, id, e.Delta.Amount, &e.Delta.Email, e.Delta.Registration)
 	} else {
-		err = test.PaylinkPayment(config, id, e.Delta.Amount*100, &e.Delta.Email, e.Delta.Registration)
+		err = test.CheckoutPayment(config, id, e.Delta.Amount, e.Delta.Email, e.Delta.Registration, e.Delta.ArrivalReference, e.Delta.RefNr)
 	}
 	if err != nil {
 		log.Println(err)

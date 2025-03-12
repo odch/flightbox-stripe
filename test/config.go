@@ -9,6 +9,7 @@ import (
 
 type Config struct {
 	StripeSecret        string `mapstructure:"STRIPE_SECRET"`
+	ReturnBaseUrl       string `mapstructure:"RETURN_BASE_URL"`
 	WebHookSecret       string `mapstructure:"WEBHOOK_SECRET"`
 	WebHookUrl          string `mapstructure:"WEBHOOK_URL"`
 	TerminalId          string `mapstructure:"TERMINAL_ID"`
@@ -19,6 +20,7 @@ func LoadConfig() (*Config, error) {
 	config := Config{}
 
 	viper.SetDefault("STRIPE_SECRET", "not_configured")
+	viper.SetDefault("RETURN_BASE_URL", "not_configured")
 	viper.SetDefault("WEBHOOK_SECRET", "not_configured")
 	viper.SetDefault("WEBHOOK_URL", "not_configured")
 	viper.SetDefault("TERMINAL_ID", "not_configured")
