@@ -10,6 +10,7 @@ jobs:
       matrix:
         environment:
           - lszm_test
+          - lszo_test
     environment: ${{ matrix.environment }}
     steps:
       - name: Checkout repository
