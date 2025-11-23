@@ -41,4 +41,4 @@ jobs:
           WEBHOOK_SECRET=${{ secrets.WEBHOOK_SECRET }},\
           WEBHOOK_URL=${{ vars.WEBHOOK_URL }},\
           TERMINAL_ID=${{ vars.TERMINAL_ID }},\
-          FIREBASE_DATABASE_URL=https://${{ vars.FIREBASE_RTDB_NAME }}.firebaseio.com
+          FIREBASE_DATABASE_URL=${{ vars.FIREBASE_RTDB_URL }}
