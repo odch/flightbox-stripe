@@ -1,10 +1,10 @@
 module github.com/odch/flightbox/functions-go/stripe-terminal
 
-go 1.20
+go 1.21
 
 require (
 	cloud.google.com/go/functions v1.15.1
-	firebase.google.com/go v3.13.0+incompatible
+	firebase.google.com/go/v4 v4.6.0
 	github.com/spf13/viper v1.16.0
 	github.com/stripe/stripe-go/v74 v74.26.0
 )
