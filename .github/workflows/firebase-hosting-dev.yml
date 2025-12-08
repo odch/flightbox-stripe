@@ -50,7 +50,7 @@ jobs:
           gcloud functions deploy StripeWebhook \
             --allow-unauthenticated \
             --trigger-http \
-            --runtime $RUNTIME \
+            --runtime=go121 \
             --no-gen2 \
             --set-env-vars=STRIPE_SECRET=${{ secrets.STRIPE_SECRET }},\
           RETURN_BASE_URL=${{ vars.RETURN_BASE_URL }},\
