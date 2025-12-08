@@ -42,3 +42,21 @@ jobs:
           WEBHOOK_URL=${{ vars.WEBHOOK_URL }},\
           TERMINAL_ID=${{ vars.TERMINAL_ID }},\
           FIREBASE_DATABASE_URL=${{ vars.FIREBASE_RTDB_URL }}
+
+      - name: Deploy Webhook Firebase Function (Go)
+        run: |
+          gcloud functions deploy StripeWebhook \
+            --allow-unauthenticated \
+            --trigger-http \
+            --runtime $RUNTIME \
+            --no-gen2 \
+            --set-env-vars=STRIPE_SECRET=${{ secrets.STRIPE_SECRET }},\
+          RETURN_BASE_URL=${{ vars.RETURN_BASE_URL }},\
+          WEBHOOK_SECRET=${{ secrets.WEBHOOK_SECRET }},\
+          WEBHOOK_URL=${{ vars.WEBHOOK_URL }},\
+          TERMINAL_ID=${{ vars.TERMINAL_ID }},\
+          FIREBASE_DATABASE_URL=${{ vars.FIREBASE_RTDB_URL }}
+          gcloud functions add-iam-policy-binding StripeWebhook \
+            --region=us-central1 \
+            --member=allUsers \
+            --role=roles/cloudfunctions.invoker
