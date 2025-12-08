@@ -68,6 +68,7 @@ func CheckoutPayment(config *Config, id string, amount int64, receiptEMail strin
 				"registration": registration,
 				"arrival":      arrivalReference,
 				"refNr":        refNr,
+				"external_id":  id,
 			},
 		},
 		CustomerEmail: stripe.String(receiptEMail),
@@ -77,6 +78,7 @@ func CheckoutPayment(config *Config, id string, amount int64, receiptEMail strin
 				"registration": registration,
 				"arrival":      arrivalReference,
 				"refNr":        refNr,
+				"external_id":  id,
 			},
 		},
 	}
