@@ -8,18 +8,43 @@ import (
 )
 
 func SetupWebhook(config *Config) error {
+	log.Printf("Setting up webhook for URL: %s", config.WebHookUrl)
 
 	stripe.Key = config.StripeSecret
 
-	params := &stripe.WebhookEndpointParams{
+	// List existing webhooks to avoid duplicates
+	params := &stripe.WebhookEndpointListParams{}
+	iter := webhookendpoint.List(params)
+
+	for iter.Next() {
+		we := iter.WebhookEndpoint()
+		if we.URL == config.WebHookUrl {
+			log.Printf("Webhook already exists: %s", we.ID)
+			log.Println(we.Secret)
+			return nil
+		}
+	}
+
+	if err := iter.Err(); err != nil {
+		return err
+	}
+
+	// Create new webhook with correct API version
+	createParams := &stripe.WebhookEndpointParams{
 		EnabledEvents: []*string{
 			stripe.String("payment_intent.succeeded"),
 			stripe.String("payment_intent.canceled"),
 			stripe.String("payment_intent.payment_failed"),
 		},
-		URL: stripe.String(config.WebHookUrl),
+		URL:        stripe.String(config.WebHookUrl),
+		APIVersion: stripe.String("2022-11-15"),
 	}
-	result, err := webhookendpoint.New(params)
+	result, err := webhookendpoint.New(createParams)
+	if err != nil {
+		return err
+	}
+
+	log.Printf("Created new webhook: %s", result.ID)
 	log.Println(result.Secret)
-	return err
+	return nil
 }
