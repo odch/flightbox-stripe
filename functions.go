@@ -45,20 +45,19 @@ func StripeWebhook(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 	ctx := context.Background()
-	// pitid := event.GetObjectValue("action", "process_payment_intent", "payment_intent")
-	// log.Println(pitid)
-	// pit := paymentintent.Get(pitid)
-
-	id := event.GetObjectValue("metadata", "external_id")
-	if event.Type == "payment_intent.succeeded" {
-		test.UpdateStatus(config, ctx, id, "success")
-
-	} else if event.Type == "payment_intent.canceled" ||
-		event.Type == "payment_intent.payment_failed" {
-		test.UpdateStatus(config, ctx, id, "failure")
-	}
 
 	fmt.Fprintf(w, "Received signed event: %v", event)
+
+	id := event.GetObjectValue("metadata", "external_id")
+	if id != "" {
+		if event.Type == "payment_intent.succeeded" {
+			test.UpdateStatus(config, ctx, id, "success")
+
+		} else if event.Type == "payment_intent.canceled" ||
+			event.Type == "payment_intent.payment_failed" {
+			test.UpdateStatus(config, ctx, id, "failure")
+		}
+	}
 }
 
 // RTDBEvent is the payload of a RTDB event.
