@@ -1,5 +1,6 @@
 name: Deploy to Firebase Functions on release (prod)
 'on':
+  workflow_dispatch:
   push:
     tags:
       - 'v*'  # Triggers when a tag like v1.0.0 is pushed

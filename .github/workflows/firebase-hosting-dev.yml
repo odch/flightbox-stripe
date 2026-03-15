@@ -1,5 +1,6 @@
 name: Deploy to Firebase Functions on merge (dev)
 'on':
+  workflow_dispatch:
   push:
     branches:
       - main
