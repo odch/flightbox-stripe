@@ -8,7 +8,8 @@ import (
 	"net/http"
 	"strings"
 
-	"cloud.google.com/go/functions/metadata"
+	"github.com/GoogleCloudPlatform/functions-framework-go/functions"
+	"github.com/cloudevents/sdk-go/v2/event"
 	"github.com/odch/flightbox/functions-go/stripe-terminal/test"
 	"github.com/stripe/stripe-go/v74/webhook"
 )
@@ -21,7 +22,8 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
-	//functions.HTTP("StripeWebhook", StripeWebhook)
+	functions.HTTP("StripeWebhook", StripeWebhook)
+	functions.CloudEvent("CardPaymentsStripe", cardPaymentsStripe)
 }
 
 func StripeWebhook(w http.ResponseWriter, req *http.Request) {
@@ -74,21 +76,23 @@ type RTDBEvent struct {
 	} `json:"delta"`
 }
 
-// {Data:<nil> Delta:map[amount:16 arrivalReference:-N_JibawWc-1GbZbxMzh currency:CHF status:pending timestamp:1.689345456348e+12]}
-func CardPaymentsStripe(ctx context.Context, e RTDBEvent) error {
-	meta, err := metadata.FromContext(ctx)
-	if err != nil {
-		return fmt.Errorf("metadata.FromContext: %w", err)
+func cardPaymentsStripe(ctx context.Context, e event.Event) error {
+	var rtdbEvent RTDBEvent
+	if err := e.DataAs(&rtdbEvent); err != nil {
+		return fmt.Errorf("event.DataAs: %w", err)
 	}
-	log.Printf("Function triggered by change to: %v", meta.Resource)
-	log.Printf("%s - %s - %s - %s", meta.Resource.Name, meta.Resource.Service, meta.Resource.Type, meta.Resource.RawPath)
-	idx := strings.Split(meta.Resource.RawPath, "/")
+
+	subject := e.Subject()
+	log.Printf("Function triggered by change to: %v", subject)
+	idx := strings.Split(subject, "/")
 	id := idx[len(idx)-1]
-	log.Printf("%+v", e)
-	if e.Delta.Method == "card" {
-		err = test.TerminalPayment(config, id, e.Delta.Amount, &e.Delta.Email, e.Delta.Registration)
+	log.Printf("%+v", rtdbEvent)
+
+	var err error
+	if rtdbEvent.Delta.Method == "card" {
+		err = test.TerminalPayment(config, id, rtdbEvent.Delta.Amount, &rtdbEvent.Delta.Email, rtdbEvent.Delta.Registration)
 	} else {
-		err = test.CheckoutPayment(config, id, e.Delta.Amount, e.Delta.Email, e.Delta.Registration, e.Delta.ArrivalReference, e.Delta.RefNr)
+		err = test.CheckoutPayment(config, id, rtdbEvent.Delta.Amount, rtdbEvent.Delta.Email, rtdbEvent.Delta.Registration, rtdbEvent.Delta.ArrivalReference, rtdbEvent.Delta.RefNr)
 	}
 	if err != nil {
 		log.Println(err)

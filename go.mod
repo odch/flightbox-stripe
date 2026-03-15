@@ -3,8 +3,9 @@ module github.com/odch/flightbox/functions-go/stripe-terminal
 go 1.21
 
 require (
-	cloud.google.com/go/functions v1.15.1
 	firebase.google.com/go/v4 v4.6.0
+	github.com/GoogleCloudPlatform/functions-framework-go v1.9.1
+	github.com/cloudevents/sdk-go/v2 v2.15.2
 	github.com/spf13/viper v1.16.0
 	github.com/stripe/stripe-go/v74 v74.26.0
 )
@@ -20,14 +21,17 @@ require (
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
-	github.com/google/go-cmp v0.5.9 // indirect
+	github.com/google/go-cmp v0.6.0 // indirect
 	github.com/google/s2a-go v0.1.4 // indirect
-	github.com/google/uuid v1.3.0 // indirect
+	github.com/google/uuid v1.6.0 // indirect
 	github.com/googleapis/enterprise-certificate-proxy v0.2.3 // indirect
 	github.com/googleapis/gax-go/v2 v2.11.0 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
+	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/magiconair/properties v1.8.7 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
+	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
+	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.8 // indirect
 	github.com/spf13/afero v1.9.5 // indirect
 	github.com/spf13/cast v1.5.1 // indirect
@@ -35,6 +39,9 @@ require (
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/subosito/gotenv v1.4.2 // indirect
 	go.opencensus.io v0.24.0 // indirect
+	go.uber.org/atomic v1.9.0 // indirect
+	go.uber.org/multierr v1.8.0 // indirect
+	go.uber.org/zap v1.21.0 // indirect
 	golang.org/x/crypto v0.9.0 // indirect
 	golang.org/x/net v0.10.0 // indirect
 	golang.org/x/oauth2 v0.8.0 // indirect
