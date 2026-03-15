@@ -30,35 +30,37 @@ jobs:
         run: |
           gcloud config set project ${{ vars.FIREBASE_PROJECT }}
 
+      - name: Delete old cardPaymentsStripe (Gen 1)
+        run: |
+          gcloud functions delete cardPaymentsStripe --region=us-central1 --quiet || true
+
       - name: Deploy Firebase Function (Go)
         run: |
           gcloud functions deploy cardPaymentsStripe \
+            --gen2 \
             --entry-point=CardPaymentsStripe \
-            --trigger-event=providers/google.firebase.database/eventTypes/ref.create \
-            --trigger-resource=projects/_/instances/${{ vars.FIREBASE_RTDB_NAME }}/refs/card-payments/{pushId} \
-            --runtime=go121 \
-            --no-gen2 \
+            --trigger-event-filters="type=google.firebase.database.ref.v1.created" \
+            --trigger-event-filters="instance=${{ vars.FIREBASE_RTDB_NAME }}" \
+            --trigger-event-filters-path-pattern="ref=card-payments/{pushId}" \
+            --trigger-location=europe-west1 \
+            --region=europe-west1 \
+            --runtime=go122 \
             --set-env-vars=STRIPE_SECRET=${{ secrets.STRIPE_SECRET }},\
           RETURN_BASE_URL=${{ vars.RETURN_BASE_URL }},\
-          WEBHOOK_SECRET=${{ secrets.WEBHOOK_SECRET }},\
-          WEBHOOK_URL=${{ vars.WEBHOOK_URL }},\
           TERMINAL_ID=${{ vars.TERMINAL_ID }},\
           FIREBASE_DATABASE_URL=${{ vars.FIREBASE_RTDB_URL }}
+
+      - name: Delete old StripeWebhook (Gen 1)
+        run: |
+          gcloud functions delete StripeWebhook --region=us-central1 --quiet || true
 
       - name: Deploy Webhook Firebase Function (Go)
         run: |
           gcloud functions deploy StripeWebhook \
+            --gen2 \
             --allow-unauthenticated \
             --trigger-http \
-            --runtime=go121 \
-            --no-gen2 \
-            --set-env-vars=STRIPE_SECRET=${{ secrets.STRIPE_SECRET }},\
-          RETURN_BASE_URL=${{ vars.RETURN_BASE_URL }},\
-          WEBHOOK_SECRET=${{ secrets.WEBHOOK_SECRET }},\
-          WEBHOOK_URL=${{ vars.WEBHOOK_URL }},\
-          TERMINAL_ID=${{ vars.TERMINAL_ID }},\
+            --region=europe-west1 \
+            --runtime=go122 \
+            --set-env-vars=WEBHOOK_SECRET=${{ secrets.WEBHOOK_SECRET }},\
           FIREBASE_DATABASE_URL=${{ vars.FIREBASE_RTDB_URL }}
-          gcloud functions add-iam-policy-binding StripeWebhook \
-            --region=us-central1 \
-            --member=allUsers \
-            --role=roles/cloudfunctions.invoker
