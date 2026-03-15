@@ -2,6 +2,7 @@ package test
 
 import (
 	"log"
+	"strings"
 
 	"github.com/stripe/stripe-go/v74"
 	"github.com/stripe/stripe-go/v74/webhookendpoint"
@@ -12,7 +13,7 @@ func SetupWebhook(config *Config) error {
 
 	stripe.Key = config.StripeSecret
 
-	// List existing webhooks to avoid duplicates
+	// List existing webhooks
 	params := &stripe.WebhookEndpointListParams{}
 	iter := webhookendpoint.List(params)
 
@@ -20,7 +21,18 @@ func SetupWebhook(config *Config) error {
 		we := iter.WebhookEndpoint()
 		if we.URL == config.WebHookUrl {
 			log.Printf("Webhook already exists: %s", we.ID)
-			log.Println(we.Secret)
+			return nil
+		}
+		if strings.Contains(we.URL, "StripeWebhook") {
+			log.Printf("Updating webhook %s URL from %s to %s", we.ID, we.URL, config.WebHookUrl)
+			updateParams := &stripe.WebhookEndpointParams{
+				URL: stripe.String(config.WebHookUrl),
+			}
+			_, err := webhookendpoint.Update(we.ID, updateParams)
+			if err != nil {
+				return err
+			}
+			log.Printf("Webhook updated successfully")
 			return nil
 		}
 	}
