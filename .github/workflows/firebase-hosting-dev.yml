@@ -10,6 +10,7 @@ jobs:
     strategy:
       matrix:
         environment:
+          - lspl_test
           - lszm_test
           - lszo_test
           - lsze_test
