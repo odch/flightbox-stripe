@@ -12,6 +12,7 @@ jobs:
         environment:
           - lszm_prod
           - lsze_prod
+          - lszo_prod
     environment: ${{ matrix.environment }}
     steps:
       - name: Checkout repository
