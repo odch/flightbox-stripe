@@ -14,6 +14,7 @@ jobs:
           - lszm_test
           - lszo_test
           - lsze_test
+          - lszt_test
     environment: ${{ matrix.environment }}
     steps:
       - name: Checkout repository
@@ -44,8 +45,8 @@ jobs:
             --trigger-event-filters="type=google.firebase.database.ref.v1.created" \
             --trigger-event-filters="instance=${{ vars.FIREBASE_RTDB_NAME }}" \
             --trigger-event-filters-path-pattern="ref=card-payments/{pushId}" \
-            --trigger-location=europe-west1 \
-            --region=europe-west1 \
+            --trigger-location=${{ vars.FUNCTION_REGION || 'europe-west1' }} \
+            --region=${{ vars.FUNCTION_REGION || 'europe-west1' }} \
             --runtime=go122 \
             --set-env-vars=STRIPE_SECRET=${{ secrets.STRIPE_SECRET }},\
           RETURN_BASE_URL=${{ vars.RETURN_BASE_URL }},\
@@ -62,7 +63,7 @@ jobs:
             --gen2 \
             --allow-unauthenticated \
             --trigger-http \
-            --region=europe-west1 \
+            --region=${{ vars.FUNCTION_REGION || 'europe-west1' }} \
             --runtime=go122 \
             --set-env-vars=WEBHOOK_SECRET=${{ secrets.WEBHOOK_SECRET }},\
           FIREBASE_DATABASE_URL=${{ vars.FIREBASE_RTDB_URL }}
