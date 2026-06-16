@@ -27,6 +27,15 @@ func init() {
 }
 
 func StripeWebhook(w http.ResponseWriter, req *http.Request) {
+	// Without a configured signing secret, event signatures would be
+	// verified against the public default value, so reject the request
+	// instead of falling back to it.
+	if config.WebHookSecret == "" || config.WebHookSecret == "not_configured" {
+		log.Println("WEBHOOK_SECRET is not configured, rejecting request")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
 	// Protects against a malicious client streaming us an endless request
 	// body
 	const MaxBodyBytes = int64(65536)
