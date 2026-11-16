@@ -1,6 +1,6 @@
 module github.com/odch/flightbox/functions-go/stripe-terminal
 
-go 1.21
+go 1.27.0
 
 require (
 	firebase.google.com/go/v4 v4.6.0
